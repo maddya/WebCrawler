@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- Optional theme -->
@@ -12,7 +13,7 @@
 </head>
 <body>
     <div class="container">
-        <button type="button">Start Crawling</button>
+        <button id="startButton" type="button">Start Crawling</button>
         <button type="button">Stop Crawling</button>
         <button type="button">Reset</button>
         <p>Crawler is currently BLANK</p>
@@ -23,6 +24,22 @@
         <p>Size of index (Table storage with our crawled data)</p>
         <p>Error URLs:</p>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#startButton").click(function () {
+                console.log("start clicked");
+                startCrawling();
+            });
+            function startCrawling() {
+                var url = "Admin.asmx/StartCrawler";
+                $.ajax({
+                    url: url,
+                    success: console.log("started crawling")
+                });
+            }
+       });
+    </script>
 
 </body>
 </html>

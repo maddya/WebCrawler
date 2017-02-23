@@ -49,7 +49,7 @@ namespace WorkerRole1
             }
             else if (URL.EndsWith("xml"))
             {
-                //ProcessXML(URL);
+                ProcessXML(URL);
             }
             else
             {
@@ -128,7 +128,7 @@ namespace WorkerRole1
         private void ProcessHTML(string URL)
         {
             Table = CloudConfiguration.GetTable();
-            
+
             WebRequest myWebRequest = WebRequest.Create(URL);
             WebResponse myWebResponse = myWebRequest.GetResponse(); // Returns a response from an Internet resource
 
@@ -140,6 +140,12 @@ namespace WorkerRole1
             string title = GetTitle(content);
 
             URLEntity link = new URLEntity(URL, title, DateTime.Now);
+
+            // Create the TableOperation object that inserts the customer entity.
+            TableOperation insertOperation = TableOperation.Insert(link);
+
+            // Execute the insert operation.
+            Table.Execute(insertOperation);
 
 
             //Regex regexLink = new Regex("(?<=<a\\s*?href=(?:'|\"))[^'\"]*?(?=(?:'|\"))");

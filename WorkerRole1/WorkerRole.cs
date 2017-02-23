@@ -67,7 +67,6 @@ namespace WorkerRole1
                             State = "Crawling";
                             Crawler.ProcessURL(crawlMessage.AsString);
                             CrawlQueue.DeleteMessage(crawlMessage);
-
                         }
                     }
                     stopMessage = StopQueue.GetMessage();
