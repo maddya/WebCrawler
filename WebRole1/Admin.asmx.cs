@@ -53,7 +53,7 @@ namespace WebRole1
 
             //Add message
             CloudQueueMessage cnnRobots = new CloudQueueMessage("http://www.cnn.com/robots.txt");
-            LoadQueue.AddMessage(cnnRobots);
+            //LoadQueue.AddMessage(cnnRobots);
 
             CloudQueueMessage bleacherReportRobots = new CloudQueueMessage("http://www.bleacherreport.com/robots.txt");
             LoadQueue.AddMessage(bleacherReportRobots);

@@ -23,6 +23,8 @@ namespace WorkerRole1
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
         public static string State { get; private set; }
+        private static PerformanceCounter CPUCount;
+        private static PerformanceCounter MemCount;
 
 
         public override void Run()
@@ -39,6 +41,9 @@ namespace WorkerRole1
 
             CloudQueueMessage stopMessage = StopQueue.GetMessage();
 
+            CPUCount = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            MemCount = new PerformanceCounter("Memory", "Available MBytes");
+
             while (true)
             {
                 while (stopMessage == null)
@@ -53,13 +58,16 @@ namespace WorkerRole1
                         Crawler.ProcessURL(message);
                         LoadQueue.DeleteMessage(loadMessage);
                     }
-                    else if (State.Equals("Loading"))
+                    else if (State.Equals("Loading") || State.Equals("Crawling")) 
                     {
                         CloudQueueMessage crawlMessage = CrawlQueue.GetMessage();
                         // dequeue crawl message
                         if (crawlMessage != null)
                         {
                             State = "Crawling";
+                            Crawler.ProcessURL(crawlMessage.AsString);
+                            CrawlQueue.DeleteMessage(crawlMessage);
+
                         }
                     }
                     stopMessage = StopQueue.GetMessage();

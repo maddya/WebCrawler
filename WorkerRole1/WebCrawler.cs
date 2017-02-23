@@ -49,7 +49,7 @@ namespace WorkerRole1
             }
             else if (URL.EndsWith("xml"))
             {
-                ProcessXML(URL);
+                //ProcessXML(URL);
             }
             else
             {
@@ -127,36 +127,54 @@ namespace WorkerRole1
 
         private void ProcessHTML(string URL)
         {
-            //HtmlWeb hw = new HtmlWeb();
-            //HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-            //doc = hw.Load(tb_url.Text);
-            //foreach (HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
+            Table = CloudConfiguration.GetTable();
+            
+            WebRequest myWebRequest = WebRequest.Create(URL);
+            WebResponse myWebResponse = myWebRequest.GetResponse(); // Returns a response from an Internet resource
+
+            Stream streamResponse = myWebResponse.GetResponseStream(); // return the data stream from the internet and save it in the stream
+
+            StreamReader reader = new StreamReader(streamResponse); // reads the data stream
+            string content = reader.ReadToEnd(); // reads it to the end
+
+            string title = GetTitle(content);
+
+            URLEntity link = new URLEntity(URL, title, DateTime.Now);
+
+
+            //Regex regexLink = new Regex("(?<=<a\\s*?href=(?:'|\"))[^'\"]*?(?=(?:'|\"))");
+            //Regex regexURL = new Regex("href\\s*=\\s*\"(?<url>.*?)\"");
+            //foreach (Match match in regexLink.Matches(content))
             //{
-            //    // Get the value of the HREF attribute
-            //    string hrefValue = link.GetAttributeValue("href", string.Empty);
-            //    cbl_items.Items.Add(hrefValue);
+            //    string link = regexURL.Match(match.Value).Value;
+            //    if (CheckLinkDomain(link) && CheckLinkIsCorrectType(link) && CheckIfAllowed(link))
+            //    {
+            //        CloudQueueMessage message = new CloudQueueMessage(link);
+            //        CrawlQueue.AddMessage(message);
+            //    }
             //}
-           
-            
-            
-            
-            //WebRequest myWebRequest = WebRequest.Create(URL);
-            //WebResponse myWebResponse = myWebRequest.GetResponse(); // Returns a response from an Internet resource
 
-            //Stream streamResponse = myWebResponse.GetResponseStream(); // return the data stream from the internet and save it in the stream
+            //Regex plzMatch = new Regex("");
+            //foreach (Match m in plzMatch.Matches(content))
+            //{
+            //    string link = m.Value;
+            //}
+            streamResponse.Close();
+            reader.Close();
+            myWebResponse.Close();
+        }
 
-            //StreamReader reader = new StreamReader(streamResponse); // reads the data stream
-            //string content = reader.ReadToEnd(); // reads it to the end
-
-            ////Regex regexLink = new Regex("(?<=<a\\s*?href=(?:'|\"))[^'\"]*?(?=(?:'|\"))");
-            ////foreach (var match in regexLink.Matches(content))
-            ////{
-            ////    CloudQueueMessage message = new CloudQueueMessage(match.ToString());
-            ////    Queue.AddMessage(message);
-            ////}
-            //streamResponse.Close();
-            //reader.Close();
-            //myWebResponse.Close();
+        private string GetTitle(string file)
+        {
+            Match m = Regex.Match(file, @"<title>\s*(.+?)\s*</title>");
+            if (m.Success)
+            {
+                return m.Groups[1].Value;
+            }
+            else
+            {
+                return "no title found";
+            }
         }
 
         private void ProcessTxt(string URL)
